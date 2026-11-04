@@ -129,6 +129,10 @@ public:
 		_size = 0;
 	}
 
+	int getSize() const { return _size; }
+	const Node<T>* getEnd() const { return _end; }
+
+
 	LinkedList& operator=(const LinkedList& other)
 	{
 		if (this == &other) return *this;
@@ -208,26 +212,6 @@ public:
 		}
 	}
 
-	void push_head(const LinkedList& other) 
-	{
-		if (other._end == nullptr) return;
-
-		LinkedList<T> rest;
-		Node<T>* cur = other._end->_next->_next;
-		if (cur != other._end->_next) 
-		{
-			do 
-			{
-				rest.push_tail(cur->_value);
-				cur = cur->_next;
-			} while (cur != other._end->_next);
-		}
-
-		push_head(rest);
-
-		push_head(other._end->_next->_value);
-	}
-
 	void push_head(const LinkedList& other)
 	{
 		if (other._end == nullptr) return;
@@ -279,9 +263,80 @@ public:
 		--_size;
 	}
 
-	
+	void delete_node(T value)
+	{
+		if (_end == nullptr) return;
 
+		while(_end->_next->_value == value)
+		{
+			pop_head();
+			if (_end == nullptr) return;
+		}
 
+		Node<T>* cur = _end->_next;
+		while (cur->_next != _end)
+		{
+			if (cur->_next->_value == value)
+			{
+				Node<T>* tmp = cur->_next;
+				cur->_next = tmp->_next;
+				delete tmp;
+				--_size;
+			}
+			else
+			{
+				cur = cur->_next;
+			}
+		} 
 
+		if (_end->_value == value)
+		{
+			pop_tail();
+		}
+	}
 
+	const T operator[](int index) const
+	{
+		if (_size == 0) throw std::out_of_range("Empty list");
+		index %= _size;
+		if (index < 0) index += _size;
+		Node<T>* cur = _end;
+		for (int i = 0; i <= index; ++i)
+		{
+			cur = cur->_next;
+		}
+		return cur->_value;
+	}
+
+	T& operator[](int index)
+	{
+		if (_size == 0) throw std::out_of_range("Empty list");
+		index %= _size;
+		if (index < 0) index += _size;
+		Node<T>* cur = _end;
+		for (int i = 0; i <= index; ++i)
+		{
+			cur = cur->_next;
+		}
+		return cur->_value;
+	}
 };
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const LinkedList<T>& obj)
+{
+	if (obj.getSize() == 0)
+	{
+		os << "[]";
+		return os;
+	}
+	const Node<T>* cur = obj.getEnd()->_next;
+	os << "...-->";
+	for (int i = 0; i < obj.getSize(); ++i)
+	{
+		os << "[" << cur->_value << "|*]-->";
+		cur = cur->_next;
+	}
+	os << "-->...\n";
+	return os;
+}
