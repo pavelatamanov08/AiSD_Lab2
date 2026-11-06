@@ -1,12 +1,14 @@
+export module classes;
 import std;
-template<typename T>
+
+export template<typename T>
 struct Node {
 	T _value = T();
 	Node* _next = nullptr;
-	Node(T val, Node* next): _value(val), _next(next) {}
+	Node(T val, Node* next = nullptr): _value(val), _next(next) {}
 };
 
-template<typename T>
+export template<typename T>
 class LinkedList {
 private:
 	Node<T>* _end = nullptr;
@@ -94,11 +96,13 @@ public:
 	{
 		if (other._end == nullptr) return;
 		if (other._size == 0) return;
+		if (other._size < 0) throw std::invalid_argument("Error! Degenerate size!");
 		_size = other._size;
 		_end = new Node<T>(other._end->_value);
 		Node<T>* cur = _end;
 		Node<T>* otherNext = other._end->_next;
-		while (otherNext != other._end) {
+		while (otherNext != other._end) 
+		{
 			cur->_next = new Node<T>(otherNext->_value);
 			cur = cur->_next;
 			otherNext = otherNext->_next;
@@ -215,6 +219,7 @@ public:
 	void push_head(const LinkedList& other)
 	{
 		if (other._end == nullptr) return;
+
 		Node<T>* otherCur = other._end;
 		do
 		{
@@ -297,7 +302,7 @@ public:
 
 	const T operator[](int index) const
 	{
-		if (_size == 0) throw std::out_of_range("Empty list");
+		if (_size == 0) throw std::invalid_argument("Empty list");
 		index %= _size;
 		if (index < 0) index += _size;
 		Node<T>* cur = _end;
@@ -310,7 +315,7 @@ public:
 
 	T& operator[](int index)
 	{
-		if (_size == 0) throw std::out_of_range("Empty list");
+		if (_size == 0) throw std::invalid_argument("Empty list");
 		index %= _size;
 		if (index < 0) index += _size;
 		Node<T>* cur = _end;
@@ -322,21 +327,19 @@ public:
 	}
 };
 
-template<typename T>
+export template<typename T>
 std::ostream& operator<<(std::ostream& os, const LinkedList<T>& obj)
 {
 	if (obj.getSize() == 0)
 	{
-		os << "[]";
+		os << "[]\n";
 		return os;
 	}
-	const Node<T>* cur = obj.getEnd()->_next;
 	os << "...-->";
 	for (int i = 0; i < obj.getSize(); ++i)
 	{
-		os << "[" << cur->_value << "|*]-->";
-		cur = cur->_next;
+		os << "[" << obj[i] << "|*]-->";
 	}
-	os << "-->...\n";
+	os << "...\n\n";
 	return os;
 }
