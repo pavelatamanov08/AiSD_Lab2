@@ -18,5 +18,5 @@ void print_reverse(const LinkedList<T>& other)
 		result += "]";
 	}
 	result += "<--...";
-	std::cout << result;
+	std::cout << result << "\n";
 }

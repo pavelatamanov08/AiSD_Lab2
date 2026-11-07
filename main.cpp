@@ -40,4 +40,6 @@ int main()
 	obj1.delete_node(5);
 	std::cout << "obj1.delete_node(5):\n" << obj1;
 
+	std::cout << "print_reverse(obj1):\n";
+	print_reverse(obj1);
 }
